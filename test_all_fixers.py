@@ -1,8 +1,8 @@
-#!/usr/bin/env python3.2
+#!/usr/bin/env python3
 """
 Runs all test cases in tests directory named test_*.py
 """
-
+import sys
 import os.path
 import os
 import importlib
@@ -11,13 +11,14 @@ import lib3to2.tests.support as support
 tests_package = 'lib3to2.tests'
 
 if __name__ == "__main__":
-    from sys import exit
     passed = True
     for module in os.listdir(tests_package.replace('.', os.sep)):
         if module.endswith('.py') and module.startswith('test_'):
+            if len(sys.argv) > 1 and module not in sys.argv[1:]:
+                continue # skip tests which are not specified via command line
             module = tests_package + '.' + module[:-3]
             _module = importlib.import_module(module)
             result = support.run_all_tests(_module)
             passed = passed and not result.failures
     if not passed:
-       exit(1)
+       sys.exit(1)
